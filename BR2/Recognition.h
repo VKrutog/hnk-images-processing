@@ -75,6 +75,8 @@ public:
 	std::string edb_file_name;
 	void NewImage();
 	void SetBlobSourceImage(Mat* src);
+	std::string* SetImage2(Mat* _src, int& string_counter);
+	std::string* SetImage3(Mat* _src, int& string_counter);
 	
 
 private:
@@ -110,5 +112,9 @@ private:
 	std::string GetCode3(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string GetCode4(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string* Get_Strings2(int& string_counter);
+	bool TicketYesNo2(Mat* src, Mat* big, int& counter);
+	Mat ReProcessing2(Mat* _src);
+	void Marking3(Mat* _src, Mat* bmp, int& counter, double ht, double wt);
+	Mat ReProcessing3(Mat* _src);
 };
 

@@ -103,6 +103,9 @@ public:
 	static std::string GetCode3(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	static void CodeCorrection3(Blob_* blobs, int counter, double ht, double wt);
 	static void MSER_Test(Mat* src);
+	static void Benk2(Mat* bmp);
+	static int RemoveBigSmallBlobs3(Mat* bmp);
+	static void Bilateral(Mat* bmp);
 	
 };
 

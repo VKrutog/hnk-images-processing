@@ -50,17 +50,12 @@ void Recognition::SetBlobSourceImage(Mat* src)
 
 Mat Recognition::ReProcessing(Mat* _src)
 {
-	//Preprocessing::Erosion2(_src);
+
 	
 	for (int i = 0; i < blobs_counter; i++)
 	{
 		Point begin = blobs[i].location;
 		Point end(begin.x + blobs[i].image.cols, begin.y + blobs[i].image.rows);
-		
-		//blobs[i].image.copyTo(blobs[i].src);
-		//Preprocessing::Contrast(&blobs[i].image, 100);
-		/*if (blobs[i].image.cols>blobs[i].image.rows)
-		{*/
 
 
 			blobs[i].image.release();
@@ -70,38 +65,97 @@ Mat Recognition::ReProcessing(Mat* _src)
 			Preprocessing::Invert(&blobs[i].image);
 			cvtColor(blobs[i].image, blobs[i].image, COLOR_BGR2GRAY);
 
-			/*Mat* sr = new Mat();
-			blobs[i].image.copyTo(sr[0]);
-			Preprocessing::Sobel_(&blobs[i].image);
-			Preprocessing::Df2(sr, &blobs[i].image);
-			Preprocessing::Invert(&blobs[i].image);
-			Preprocessing::SisThreshold(&blobs[i].image);
-			Preprocessing::BlackFrame(&blobs[i].image);
-			cvtColor(blobs[i].image, blobs[i].image, COLOR_BGR2GRAY);*/
-
-
-
-
-
-		//}
-		/*else
-		{
-			Preprocessing::Erosion2(&blobs[i].image);
-			Preprocessing::Erosion2(&blobs[i].image);
-			Preprocessing::Erosion2(&blobs[i].image);
-		}*/
-		
-		//Preprocessing::Dilation2(&blobs[i].image);
+			
 		
 	}
 	Mat res_mat(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
 	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, blobs, blobs_counter, 1);
-	//Preprocessing::Dilation2(&res_mat);
-	/*Preprocessing::Dilation2(&res_mat);
-	Preprocessing::Erosion2(&res_mat);*/
-	//Preprocessing::Erosion2(&res_mat);
+
 	
 	return res_mat;
+}
+
+
+Mat Recognition::ReProcessing2(Mat* _src)
+{
+
+	Blob_ * big_blobs = new Blob_[blobs_counter];
+	Blob_ * small_blobs = new Blob_[blobs_counter];
+	int counter_big_blobs = 0;
+	int counter_small_blobs = 0;
+
+	int w = _src[0].cols;
+	int h = _src[0].rows;
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		int wi = blobs[i].image.cols;
+		int hi = blobs[i].image.rows;
+		bool cond = wi > 0 &&  hi > 0 && wi < w / 2 && hi < h / 2;
+
+		if (cond)
+		{
+			Point begin = blobs[i].location;
+			Point end(begin.x + blobs[i].image.cols, begin.y + blobs[i].image.rows);
+
+
+			blobs[i].image.release();
+
+			blobs[i].image = Preprocessing::ChangeFrame2(_src, begin, end);
+			
+			Preprocessing::Enhance(&blobs[i].image);
+			Preprocessing::SisThreshold(&blobs[i].image);
+			Preprocessing::Invert(&blobs[i].image);
+
+			cvtColor(blobs[i].image, blobs[i].image, COLOR_BGR2GRAY);
+
+
+
+			if (blobs[i].image.cols > blobs[i].image.rows)
+			{
+				big_blobs[counter_big_blobs] = blobs[i];
+				counter_big_blobs++;
+			}
+			else
+			{
+				small_blobs[counter_small_blobs] = blobs[i];
+				counter_small_blobs++;
+			}
+		}
+	}
+
+
+
+	Mat res_mat(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, big_blobs, counter_big_blobs, 1);
+
+	
+	
+	int counter = 0;
+	Blob_* blobs_new = BlobCounter_::GetBlobs(res_mat, true, true, counter);
+
+	blobs_counter = counter + counter_small_blobs;
+	blobs = new Blob_[blobs_counter];
+
+	for (int i = 0; i < counter; i++)
+	{
+		blobs[i] = blobs_new[i];
+	}
+	for (int i = 0; i < counter_small_blobs; i++)
+	{
+		blobs[i+counter] = small_blobs[i];
+	}
+
+	/*for (int i = 0; i < blobs_counter; i++)
+	{
+		Preprocessing::Dilation2(&blobs[i].image);
+	}*/
+
+	Mat res_mat2(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat2 = BlobsBuild_::PutBlobsBlackWhite(res_mat2, blobs, blobs_counter, 1);
+
+	//imwrite("c:\\0000000aaa.jpg", res_mat2);
+	return res_mat2;
 }
 
 
@@ -120,9 +174,36 @@ bool Recognition::TicketYesNo(Mat* src, Mat* big, int& counter)
 	Preprocessing::BlackFrame(big);
 	Preprocessing::RemoveBigSmallBlobs(big);
 	sr[0].release();
+
 	return res;
 }
 
+
+
+bool Recognition::TicketYesNo2(Mat* src, Mat* big, int& counter)
+{
+
+	bool res = PrePro(src, big, counter);
+	if (!res) return res;
+	Mat* sr = new Mat();
+	big[0].copyTo(sr[0]);
+	
+	Preprocessing::Erosion2(big);
+	Preprocessing::Benk2(big);
+	for (int i = 0; i < 5; i++)
+		Preprocessing::Blur(big);
+	//Preprocessing::Erosion2(big);
+	//Preprocessing::Benk2(big);
+	
+	Preprocessing::Df2(sr, big);
+	Preprocessing::Invert(big);
+	Preprocessing::SisThreshold(big);
+	Preprocessing::BlackFrame(big);
+	Preprocessing::RemoveBigSmallBlobs3(big);
+	
+	sr[0].release();
+	return res;
+}
 
 std::string* Recognition::SetImage(Mat* _src, int& string_counter)
 {	
@@ -136,8 +217,11 @@ std::string* Recognition::SetImage(Mat* _src, int& string_counter)
 		
 		std::string* ret = new std::string[1];
 		ret[0]	= std::to_string(error);
+		//imwrite("C:\\0.jpg", _src[0]);
 		return ret;
 	}
+
+	
 
 	cvtColor(src[0], src[0], COLOR_BGR2GRAY);
 
@@ -200,6 +284,167 @@ std::string* Recognition::SetImage(Mat* _src, int& string_counter)
 	//return NULL;
 }
 
+
+std::string* Recognition::SetImage2(Mat* _src, int& string_counter)
+{
+	NewImage();
+	src = _src;
+	_src[0].copyTo(prcd[0]);
+
+
+	if(!TicketYesNo2(prcd, src, error)) ///*******************
+	{
+		string_counter = 1;
+
+		std::string* ret = new std::string[1];
+		ret[0] = std::to_string(error);
+		return ret;
+	}
+
+	
+	cvtColor(src[0], src[0], COLOR_BGR2GRAY);
+
+	Mat tmp0;
+	src[0].copyTo(tmp0);
+
+	
+	
+	blobs = BlobCounter_::GetBlobs(tmp0, true, true, blobs_counter);
+
+	tmp0.release();
+
+	
+
+	double av_h = 0.;
+	double av_w = 0.;
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		av_h += blobs[i].image.rows;
+		av_w += blobs[i].image.cols;
+	}
+	av_h /= blobs_counter;
+	av_w /= blobs_counter;
+
+
+	Preprocessing::VertStich(src, av_h / 20 + 1);
+
+	Mat res_mat(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, blobs, blobs_counter, 1);
+	//Preprocessing::RemoveBigSmallBlobs(&res_mat);
+	delete[] blobs;
+	blobs = BlobCounter_::GetBlobs(res_mat, true, true, blobs_counter);
+
+
+	src[0].release();
+	src[0] = ReProcessing2(prcd);
+	//return NULL;
+	Marking3(prcd, src, blobs_counter, av_h, av_w);
+
+	cvtColor(src[0], src[0], COLOR_GRAY2BGR);
+
+	if (edb_file_names_counter > 1)
+	{
+		double min = 10000000000000000.;
+		int best = -1;
+		for (int i = 0; i < edb_file_names_counter; i++)
+		{
+			int counter_edb = 0;
+			std::string* _edb = ReadEDBCompare(edb_file_names[i], counter_edb);
+			double res = RecogizeCompare(counter_edb, _edb);
+			if (res < min)
+			{
+				min = res;
+				best = i;
+			}
+		}
+		ReadEDB(edb_file_names[best]);
+	}
+	Recogize();
+	return Get_Strings(string_counter);
+}
+
+
+std::string* Recognition::SetImage3(Mat* _src, int& string_counter)
+{
+	NewImage();
+	src = _src;
+	_src[0].copyTo(prcd[0]);
+
+
+	if (!TicketYesNo2(prcd, src, error)) ///*******************
+	{
+		string_counter = 1;
+
+		std::string* ret = new std::string[1];
+		ret[0] = std::to_string(error);
+		return ret;
+	}
+
+
+	cvtColor(src[0], src[0], COLOR_BGR2GRAY);
+
+	Mat tmp0;
+	src[0].copyTo(tmp0);
+
+
+
+	blobs = BlobCounter_::GetBlobs(tmp0, true, true, blobs_counter);
+
+	tmp0.release();
+
+
+
+	double av_h = 0.;
+	double av_w = 0.;
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		av_h += blobs[i].image.rows;
+		av_w += blobs[i].image.cols;
+	}
+	av_h /= blobs_counter;
+	av_w /= blobs_counter;
+
+
+	Preprocessing::VertStich(src, av_h / 20 + 1);
+
+	Mat res_mat(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, blobs, blobs_counter, 1);
+	//Preprocessing::RemoveBigSmallBlobs(&res_mat);
+	delete[] blobs;
+	blobs = BlobCounter_::GetBlobs(res_mat, true, true, blobs_counter);
+
+
+	src[0].release();
+	src[0] = ReProcessing3(prcd);
+	//return NULL;
+	Marking3(prcd, src, blobs_counter, av_h, av_w);
+
+	cvtColor(src[0], src[0], COLOR_GRAY2BGR);
+
+	if (edb_file_names_counter > 1)
+	{
+		double min = 10000000000000000.;
+		int best = -1;
+		for (int i = 0; i < edb_file_names_counter; i++)
+		{
+			int counter_edb = 0;
+			std::string* _edb = ReadEDBCompare(edb_file_names[i], counter_edb);
+			double res = RecogizeCompare(counter_edb, _edb);
+			if (res < min)
+			{
+				min = res;
+				best = i;
+			}
+		}
+		ReadEDB(edb_file_names[best]);
+	}
+	Recogize();
+	return Get_Strings(string_counter);
+}
+
+
 void Recognition::SetEDB_fileNames(std::string* _edb_file_names, int _edb_file_names_counter)
 {
 	edb_file_names_counter = _edb_file_names_counter;
@@ -257,7 +502,8 @@ void Recognition::CodeCorrection3(Blob_* blobs, int counter, double ht, double w
 
 		
 		Gravitation(&blobs[i]);
-
+		/*Preprocessing::SisThreshold(&blobs[i].image);
+		Preprocessing::Dilation2(&blobs[i].image);*/
 		/*double grav_x = blobs[i].xC / (tmp.cols / 100.);
 		double grav_y = blobs[i].yC / (tmp.rows / 100.);*/
 
@@ -315,7 +561,7 @@ std::string Recognition::GetCode3(Mat* src, int sx, int sy, double ht, double wt
 		}
 		for (int j = 0; j < x; j++)
 		{
-			int dopp = dop + j * 3;
+			int dopp = dop + j *3;
 			if (src_[dopp]>0/*250*/)
 			{
 				sum_i += i;
@@ -408,6 +654,37 @@ std::string Recognition::GetCode3(Mat* src, int sx, int sy, double ht, double wt
 		if (tmp > 42 && tmp <= 100)
 			ret = ret + '9';
 	}
+
+	/*ret = ret + ' ';
+
+	{
+		int i = 2;
+		for (int r = 0; r < 2; r++)
+		{
+			double tmp = ver[i] / perc_hor;
+			if (tmp <= 10)
+				ret = ret + '0';
+			if (tmp > 10 && tmp <= 14)
+				ret = ret + '1';
+			if (tmp > 14 && tmp <= 18)
+				ret = ret + '2';
+			if (tmp > 18 && tmp <= 22)
+				ret = ret + '3';
+			if (tmp > 22 && tmp <= 26)
+				ret = ret + '4';
+			if (tmp > 26 && tmp <= 30)
+				ret = ret + '5';
+			if (tmp > 30 && tmp <= 34)
+				ret = ret + '6';
+			if (tmp > 34 && tmp <= 38)
+				ret = ret + '7';
+			if (tmp > 38 && tmp <= 42)
+				ret = ret + '8';
+			if (tmp > 42 && tmp <= 100)
+				ret = ret + '9';
+		}
+	}*/
+
 
 	ret = ret + ' ';
 
@@ -694,6 +971,76 @@ Blob_* Recognition::Marking2(Mat* _src, Mat* bmp, int& counter, double ht, doubl
 	}
 
 	return blobs;
+}
+
+
+void Recognition::Marking3(Mat* _src, Mat* bmp, int& counter, double ht, double wt)
+{
+	int width = bmp[0].cols;
+	int height = bmp[0].rows;
+	Mat src_gray;
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, COLOR_BGR2GRAY);
+	else
+		bmp[0].copyTo(src_gray);
+	
+
+
+
+	Preprocessing::BlobsCorrection(blobs, counter, &src_gray);
+
+	/*for (int i = 0; i < blobs_counter; i++)
+	{
+		Preprocessing::BlobsCorrectionPixels(&blobs[i].image);
+		if (i == 346)
+		{
+			int yy = 89;
+			int f = 67;
+			int t = yy + f;
+		}
+	}*/
+
+	double av_h = 0.;
+	double av_w = 0.;
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		av_h += blobs[i].image.rows;
+		av_w += blobs[i].image.cols;
+	}
+	av_h /= blobs_counter;
+	av_w /= blobs_counter;
+
+
+	CodeCorrection3(blobs, counter, ht, wt);
+
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+
+
+		Point begin = blobs[i].location;
+		Point end(begin.x + blobs[i].image.cols, begin.y + blobs[i].image.rows);
+
+		if (begin.x < 0)
+			begin.x = 0;
+		if (end.x >= _src[0].cols)
+			end.x = _src[0].cols - 1;
+
+		if (begin.y < 0)
+			begin.y = 0;
+		if (end.y >= _src[0].rows)
+			end.y = _src[0].rows - 1;
+
+
+
+
+		blobs[i].src = Preprocessing::ChangeFrame2(_src, begin, end);
+		cvtColor(blobs[i].image, blobs[i].image, COLOR_GRAY2BGR);
+	}
+
+	
 }
 
 void Recognition::ReadEDB(std::string _edb_file_name)
@@ -1497,3 +1844,84 @@ void Recognition::Gravitation(Blob_* src)
 
 }
 
+Mat Recognition::ReProcessing3(Mat* _src)
+{
+
+	Blob_ * big_blobs = new Blob_[blobs_counter];
+	Blob_ * small_blobs = new Blob_[blobs_counter];
+	int counter_big_blobs = 0;
+	int counter_small_blobs = 0;
+
+	int w = _src[0].cols;
+	int h = _src[0].rows;
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		int wi = blobs[i].image.cols;
+		int hi = blobs[i].image.rows;
+		bool cond = wi > 0 && hi > 0 && wi < w / 2 && hi < h / 2;
+
+		if (cond)
+		{
+			Point begin = blobs[i].location;
+			Point end(begin.x + blobs[i].image.cols, begin.y + blobs[i].image.rows);
+
+
+			blobs[i].image.release();
+
+			blobs[i].image = Preprocessing::ChangeFrame2(_src, begin, end);
+
+			Preprocessing::Enhance(&blobs[i].image);
+			Preprocessing::SisThreshold(&blobs[i].image);
+			Preprocessing::Invert(&blobs[i].image);
+
+			cvtColor(blobs[i].image, blobs[i].image, COLOR_BGR2GRAY);
+
+
+
+			if (blobs[i].image.cols > blobs[i].image.rows)
+			{
+				big_blobs[counter_big_blobs] = blobs[i];
+				counter_big_blobs++;
+			}
+			else
+			{
+				small_blobs[counter_small_blobs] = blobs[i];
+				counter_small_blobs++;
+			}
+		}
+	}
+
+
+
+	Mat res_mat(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, big_blobs, counter_big_blobs, 1);
+
+
+
+	int counter = 0;
+	Blob_* blobs_new = BlobCounter_::GetBlobs(res_mat, true, true, counter);
+
+	blobs_counter = counter + counter_small_blobs;
+	blobs = new Blob_[blobs_counter];
+
+	for (int i = 0; i < counter; i++)
+	{
+		blobs[i] = blobs_new[i];
+	}
+	for (int i = 0; i < counter_small_blobs; i++)
+	{
+		blobs[i + counter] = small_blobs[i];
+	}
+
+	for (int i = 0; i < blobs_counter; i++)
+	{
+		Preprocessing::Dilation2(&blobs[i].image);
+	}
+
+	Mat res_mat2(_src[0].rows, _src[0].cols, CV_8UC1, Scalar(0));
+	res_mat2 = BlobsBuild_::PutBlobsBlackWhite(res_mat2, blobs, blobs_counter, 1);
+
+	//imwrite("c:\\0000000aaa.jpg", res_mat2);
+	return res_mat2;
+}

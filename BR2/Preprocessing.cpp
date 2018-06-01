@@ -343,6 +343,44 @@ void Preprocessing::ColorRemove(Mat* big)
 	}
 }
 
+void Preprocessing::Benk2(Mat* bmp)
+{
+	Mat src_gray;
+	Mat grad;
+	//char* window_name = "..";
+	int scale = 1;
+	int delta = 0;
+	int ddepth = CV_16S;
+
+	int c;
+
+	GaussianBlur(bmp[0], bmp[0], Size(3, 3), 0, 0, BORDER_DEFAULT);
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, CV_BGR2GRAY);
+
+	Mat grad_x, grad_y;
+	Mat abs_grad_x, abs_grad_y;
+
+
+
+	Sobel(src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT);
+	convertScaleAbs(grad_x, abs_grad_x);
+
+	Sobel(src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT);
+	convertScaleAbs(grad_y, abs_grad_y);
+
+	addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+
+	cvtColor(grad, bmp[0], COLOR_GRAY2BGR);
+	src_gray.release();
+	grad.release();
+	grad_x.release();
+	grad_y.release();
+	abs_grad_x.release();
+	abs_grad_y.release();
+}
+
 void Preprocessing::Sobel_(Mat* bmp)
 {
 	Mat src_gray;
@@ -412,6 +450,17 @@ void Preprocessing::Transpose_(Mat* bmp)
 	transpose(bmp[0], bmp[0]);
 }
 
+
+void Preprocessing::Bilateral(Mat* bmp)
+{
+	Mat dst;
+	//
+	GaussianBlur(bmp[0], dst, Size(51, 51), 0, 0);
+	//medianBlur(bmp[0], dst, 11);
+	//bilateralFilter(bmp[0], dst, 50, 100, 100);
+	//}
+	dst.copyTo(bmp[0]);
+}
 
 Mat Preprocessing::FewBlobsTop(Mat bmp, double from, double till)
 {
@@ -2317,9 +2366,9 @@ void Preprocessing::Contrast(Mat* src, int nContrast /*-100 100*/)
 
 }
 
-int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
+int Preprocessing::RemoveBigSmallBlobs3(Mat* bmp)
 {
-	double from = 100;
+	double from = 500;
 	double till = 4000;
 	int width = bmp[0].cols;
 	int height = bmp[0].rows;
@@ -2357,6 +2406,49 @@ int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
 	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
 	return counter;
 }
+
+
+int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
+{
+	double from = 100;
+	double till = 4000;
+	int width = bmp[0].cols;
+	int height = bmp[0].rows;
+
+	double onePerc = width*height / 100.0;
+	till = 3. * onePerc;
+	from = 0.001*onePerc;
+
+	Mat src_gray;
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, COLOR_BGR2GRAY);
+
+	int countB = 0;
+	Blob_* blobs = BlobCounter_::GetBlobs(src_gray, true, true, countB);
+	BlobsCorrection(blobs, countB, &src_gray);
+
+	Blob_* few_blobs = new Blob_[countB];
+	int counter = 0;
+	for (int i = 0; i < countB; i++)
+	{
+		double area = blobs[i].area;
+		bool tmp = true;// dif < 20;
+		double prop = 1.* blobs[i].image.rows / blobs[i].image.cols;
+		bool cond1 = !(prop > 5 && blobs[i].image.rows > 20);
+		if (area > from && area <= till && tmp)
+			if (area > from && blobs[i].area < till && blobs[i].image.cols<bmp[0].cols / 2 && cond1)
+			{
+				few_blobs[counter++] = blobs[i];
+			}
+	}
+
+	Mat res_mat(bmp[0].rows, bmp[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, few_blobs, counter, 1);
+	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
+	return counter;
+}
+
 
 int Preprocessing::RemoveBigSmallBlobs2(Mat* bmp)
 {
@@ -2746,16 +2838,51 @@ int Preprocessing::FindBlob(int x, int y, Blob_* blobs, int counter)
 
 void Preprocessing::BlobsCorrection(Blob_* blobs, int count_blobs, Mat* big)
 {
+	
+	int w = big[0].cols;
+	int h = big[0].rows;
 	for (int i = 0; i < count_blobs; i++)
 	{
 		int width = blobs[i].image.cols;
 		int height = blobs[i].image.rows;
-		Point beg = blobs[i].location;
-		Point end(beg.x + width, beg.y+height);
 
-		blobs[i].image.release();
-		blobs[i].image = ChangeFrame3(big, beg, end);
-		//BlobsCorrectionPixels(&blobs[i].image);
+		if (width > 0 && height > 0)
+		{
+
+
+			Point beg = blobs[i].location;
+
+
+
+
+
+			int beg_x = beg.x + width;
+			int beg_y = beg.y + height;
+
+
+
+			if (beg_x >= big[0].cols - 1)
+				beg_x = big[0].cols - 1;
+			if (beg_y >= big[0].rows - 1)
+				beg_y = big[0].rows - 1;
+
+			Point end(beg_x, beg_y);
+
+			int e1 = beg.x;
+			int e2 = beg.y;
+
+			int e3 = end.x;
+			int e4 = end.y;
+
+			blobs[i].image.release();
+			blobs[i].image = ChangeFrame3(big, beg, end);
+			if (i == count_blobs - 2)
+			{
+				int rr = 56;
+
+			}
+			//BlobsCorrectionPixels(&blobs[i].image);
+		}
 	}
 }
 
@@ -2763,10 +2890,12 @@ void Preprocessing::BlobsCorrectionPixels(Mat* src)
 {
 	int  width = src[0].cols;
 	int height = src[0].rows;
+	if (width < 15 || height < 25)
+		return;
 	Point beg(0, 0);
 	Point end(src[0].cols - 1, src[0].rows - 1);
 	int stride = src[0].step;
-	int val = 6;
+	int val = 3;
 	unsigned char *src_ = (unsigned char*)(src[0].data);
 
 	int i = 0;
