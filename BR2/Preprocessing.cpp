@@ -343,6 +343,44 @@ void Preprocessing::ColorRemove(Mat* big)
 	}
 }
 
+void Preprocessing::Benk2(Mat* bmp)
+{
+	Mat src_gray;
+	Mat grad;
+	//char* window_name = "..";
+	int scale = 1;
+	int delta = 0;
+	int ddepth = CV_16S;
+
+	int c;
+
+	GaussianBlur(bmp[0], bmp[0], Size(3, 3), 0, 0, BORDER_DEFAULT);
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, CV_BGR2GRAY);
+
+	Mat grad_x, grad_y;
+	Mat abs_grad_x, abs_grad_y;
+
+
+
+	Sobel(src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT);
+	convertScaleAbs(grad_x, abs_grad_x);
+
+	Sobel(src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT);
+	convertScaleAbs(grad_y, abs_grad_y);
+
+	addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+
+	cvtColor(grad, bmp[0], COLOR_GRAY2BGR);
+	src_gray.release();
+	grad.release();
+	grad_x.release();
+	grad_y.release();
+	abs_grad_x.release();
+	abs_grad_y.release();
+}
+
 void Preprocessing::Sobel_(Mat* bmp)
 {
 	Mat src_gray;
@@ -412,6 +450,17 @@ void Preprocessing::Transpose_(Mat* bmp)
 	transpose(bmp[0], bmp[0]);
 }
 
+
+void Preprocessing::Bilateral(Mat* bmp)
+{
+	Mat dst;
+	//
+	GaussianBlur(bmp[0], dst, Size(51, 51), 0, 0);
+	//medianBlur(bmp[0], dst, 11);
+	//bilateralFilter(bmp[0], dst, 50, 100, 100);
+	//}
+	dst.copyTo(bmp[0]);
+}
 
 Mat Preprocessing::FewBlobsTop(Mat bmp, double from, double till)
 {
@@ -544,6 +593,12 @@ int Preprocessing::FewBlobsTop2(Mat* bmp)
 	Mat res_mat(bmp[0].rows, bmp[0].cols, CV_8UC1, Scalar(0));
 	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, few_blobs, counter, 1);
 	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
+	
+	src_gray.release();
+	res_mat.release();
+	
+	delete[] blobs;
+	delete[] few_blobs;
 	return counter;
 }
 void Preprocessing::Invert(Mat* bmp)
@@ -682,20 +737,56 @@ void Preprocessing::SearchTicket4_bottom(Mat* big)
 
 };
 
-bool Preprocessing::TicketYesNo_0(Mat* src, int& counter)
+
+bool Preprocessing::TicketYesNo_0_old(Mat* _src, int& counter)
 {
-	
-	Erosion2(src);
-	Preprocessing::SearchTicket4_bottom(src);
-	SearchTicket4(src);
-	Invert(src);
-	Threshold(src);
+	Erosion2(_src);
+	Preprocessing::SearchTicket4_bottom(_src);
+	SearchTicket4(_src);
+	Invert(_src);
+	Threshold(_src);
 	//SisThreshold(src);
-	counter = FewBlobsTop2(src);
+	counter = FewBlobsTop2(_src);
 	if (counter > 80)
-		return true;
+	return true;
 	else
-		return false;
+	return false;
+};
+
+
+bool Preprocessing::TicketYesNo_0(Mat* _src, int& counter)
+{
+	Mat* sr = new Mat[1];
+	_src[0].copyTo(sr[0]);
+
+	Preprocessing::Erosion2(_src);
+	Preprocessing::Benk2(_src);
+	for (int i = 0; i < 5; i++)
+		Preprocessing::Blur(_src);
+
+	Preprocessing::Df2(sr, _src);
+	Preprocessing::Invert(_src);
+	Preprocessing::SisThreshold(_src);
+	Preprocessing::BlackFrame(_src);
+	Preprocessing::RemoveBigSmallBlobs3(_src);
+	//imwrite("c:\\0000000aaa.jpg", _src[0]);
+	counter = 150;
+
+
+
+
+
+	//Erosion2(src);
+	//Preprocessing::SearchTicket4_bottom(src);
+	//SearchTicket4(src);
+	//Invert(src);
+	//Threshold(src);
+	////SisThreshold(src);
+	//counter = FewBlobsTop2(src);
+	//if (counter > 80)
+		return true;
+	/*else
+		return false;*/
 };
 
 void Preprocessing::Rotation_0(Mat* src)
@@ -854,15 +945,111 @@ double Preprocessing::RotationW(Mat* src)
 	return ret;
 };
 
-bool Preprocessing::RotationW2(Mat* src, int& code, double& angle)
+//bool Preprocessing::RotationW2(Mat* src, int& code, double& angle)
+//{
+//
+//	Mat tmp1;
+//	double ret = 0.0;
+//	src[0].copyTo(tmp1);
+//
+//	int counter = 0;
+//	Preprocessing::TicketYesNo_0(&tmp1, counter);
+//	if (counter < 100)
+//	{
+//		code = 1000 + counter;
+//		return false;
+//	}
+//
+//	if (Preprocessing::BlackLines90(&tmp1))
+//	{
+//		ret -= 90.0;
+//		Preprocessing::Rotate(&src[0], -90.);
+//		Preprocessing::Rotate(&tmp1, -90.);
+//	}
+//
+//	double maxi = 0.0;
+//	//double angle = 0.0;
+//
+//
+//	for (double i = -30.0; i < 30.0; i += 2.0)
+//	{
+//		Mat tmp;
+//		tmp1.copyTo(tmp);
+//		Preprocessing::Rotate(&tmp, i);
+//		double res = Preprocessing::BlackLines(&tmp);
+//		tmp.release();
+//		if (res > maxi)
+//		{
+//			angle = i;
+//			maxi = res;
+//		}
+//		
+//	}
+//	maxi = 0.0;
+//	double angle_ = 0.0;
+//	for (double i = angle - 2.0; i < angle + 2.0; i += 0.5)
+//	{
+//		Mat tmp;
+//		tmp1.copyTo(tmp);
+//		Preprocessing::Rotate(&tmp, i);
+//		double res = Preprocessing::BlackLines(&tmp);
+//		tmp.release();
+//		if (res > maxi)
+//		{
+//			angle_ = i;
+//			maxi = res;
+//		}
+//		
+//	}
+//
+//	if (maxi < 20)
+//	{
+//		code = 2000 + maxi;
+//		return false;
+//	}
+//
+//	Preprocessing::Rotate(&tmp1, angle_);
+//	double re = Preprocessing::GreenPercent(&tmp1);
+//	/*if (re > 20)
+//	{
+//	code = 3000 + re;
+//	return false;
+//	}*/
+//	angle = ret + angle_;
+//	src[0].release();
+//	tmp1.copyTo(src[0]);
+//	tmp1.release();
+//	//angle = ret;
+//	return true;
+//};
+
+bool Preprocessing::RotationW3(Mat* src, int& code, double& angle)
 {
 
 	Mat tmp1;
+	Mat tmp2;
 	double ret = 0.0;
 	src[0].copyTo(tmp1);
+	src[0].copyTo(tmp2);
 
 	int counter = 0;
-	Preprocessing::TicketYesNo_0(&tmp1, counter);
+	int counter1 = 0;
+	
+	Preprocessing::TicketYesNo_0_old(&tmp1, counter);
+	Preprocessing::TicketYesNo_0(&tmp2, counter1);
+
+	double r1 = IsItScan(&tmp1);
+	double r2 = IsItScan(&tmp2);
+
+	if (r2 > r1)
+	{
+		tmp1.release();
+		tmp2.copyTo(tmp1);
+		counter = counter1;
+
+	}
+
+
 	if (counter < 100)
 	{
 		code = 1000 + counter;
@@ -917,19 +1104,19 @@ bool Preprocessing::RotationW2(Mat* src, int& code, double& angle)
 
 	Preprocessing::Rotate(&tmp1, angle_);
 	double re = Preprocessing::GreenPercent(&tmp1);
-	if (re > 20)
+	/*if (re > 20)
 	{
-		code = 3000 + re;
-		return false;
-	}
+	code = 3000 + re;
+	return false;
+	}*/
 	angle = ret + angle_;
 	src[0].release();
 	tmp1.copyTo(src[0]);
 	tmp1.release();
+	tmp2.release();
 	//angle = ret;
 	return true;
 };
-
 
 void Preprocessing::ReSize3(Mat* bmp, int width, int height)
 {
@@ -947,14 +1134,16 @@ void Preprocessing::Rotate(Mat* src, double angle)
 	Rect x = RotatedRect(c, src[0].size(), angle).boundingRect();
 	r.at<double>(0, 2) += x.width / 2.0 - c.x;
 	r.at<double>(1, 2) += x.height / 2.0 - c.y;
-	//warpAffine(src[0], src[0], r, x.size());
+	////warpAffine(src[0], src[0], r, x.size());
 
-	warpAffine(src[0], src[0], r, x.size(), INTER_CUBIC, BORDER_CONSTANT, Scalar(0,255,0));
+	//Mat tmp;
+	//warpAffine(src[0], tmp, r, x.size(), INTER_CUBIC, BORDER_CONSTANT, Scalar(0,255,0));
+	warpAffine(src[0], src[0], r, x.size(), INTER_CUBIC, BORDER_CONSTANT, Scalar(0, 255, 0));
+	/*src[0].release();
+	tmp.copyTo(src[0]);
+	tmp.release();*/
+	r.release();
 
-	/*Point2f c(src[0].cols / 2., src[0].rows / 2.);
-	Mat r = getRotationMatrix2D(c, (double)angle, 1.0);
-
-	warpAffine(src[0], src[0], r, src[0].size(), INTER_CUBIC, BORDER_CONSTANT, Scalar::all(0));*/
 }
 
 
@@ -1639,25 +1828,120 @@ void Preprocessing::Cutting4(Mat* big)
 	src[0].release();
 }
 
+
 bool Preprocessing::RotateAndCut(Mat* big, int& counter)
 {
 	Mat* src = new Mat();
 	big[0].copyTo(src[0]);
 	double ang = 0.0;
-	bool res=Preprocessing::RotationW2(big,counter, ang);
+	/*Mat big1;
+	Mat big2;
+	big[0].copyTo(big1);
+	big[0].copyTo(big2);
+	big[0].release();*/
+	int cnt1 = 0;
+	int cnt2 = 0;
+	bool res = Preprocessing::RotationW3(big, cnt1, ang);
+	/*res = Preprocessing::RotationW2(&big2, cnt2, ang);*/
+
+	/*if (cnt1 > cnt2)
+		big1.copyTo(big[0]);
+	else
+		big2.copyTo(big[0]);
+
+	big1.release();
+	big2.release();*/
+
+
+	//imwrite("c:\\0000000aaa.jpg", big[0]);
 	if (!res)
 		return res;
+	int parts = 3;
+	int step = big[0].rows / parts - 5;
+	int mini_beg = 1000000;
+	int maxi_end = 0;
 
-	/*double ang = Preprocessing::RotationW(big);*/
+	//imwrite("c:\\0000000aaa.jpg", big[0]);
 
-	
-	//return true;
+	for (int i = 0; i < big[0].rows - step; i += step)
+	{
+		Point beg(0, i);
+		int istep = i + step;
+		/*if (istep >= big[0].rows - 1)
+		istep = big[0].rows - 1;*/
+		Point end(big[0].cols, istep);
+		Mat tmp = Preprocessing::ChangeFrame3(big, beg, end);
+		Point rez = Preprocessing::Coord(&tmp);
+		tmp.release();
+		if (rez.x < mini_beg && rez.x>-1)
+			mini_beg = rez.x;
+		if (rez.y > maxi_end && rez.y >-1)
+			maxi_end = rez.y;
+	}
+
+
+	double length = maxi_end - mini_beg;
+	if (length <= 0)
+	{
+		counter = 4000;
+
+		big[0].release();
+		src[0].copyTo(big[0]);
+		src[0].release();
+
+		return false;
+	}
+
+	Preprocessing::Rotate(src, ang);
+
+	int adds_left = 10. * length / 100.0;
+
+	int adds_right = 10. * length / 100.0;
+
+
+
+	if (mini_beg - adds_left>0)
+		mini_beg -= adds_left;
+
+	if (maxi_end + adds_right<big[0].cols - 1)
+		maxi_end += adds_right;
+
+	/*if (beg.y - 50>0)
+	beg.y -= 50;*/
+
+	/*if (end.y + 50<big[0].rows - 1)
+	end.y += 50;*/
+
+	/*if (beg.y>100)
+	beg.y = 0;
+
+	if (end.y<big[0].rows-100)
+	end.y = big[0].rows - 1;*/
+	Point beg(mini_beg, 0);
+	Point end(maxi_end, big[0].rows - 1);
+	beg.y = 0;
+	end.y = src[0].rows - 1;
+
+
+	Preprocessing::ChangeFrame(src, beg, end);
+	big[0].release();
+	src[0].copyTo(big[0]);
+	src[0].release();
+
+	return true;
+}
+
+
+
+Point Preprocessing::Coord(Mat* big)
+{
+	//imwrite("c:\\0000000aaa.jpg", big[0]);
 	int stride_big = big[0].step;
 	unsigned char *big_ = (unsigned char*)(big[0].data);
 
 
-	Point beg(0, 0);
-	Point end(0, 0);
+	Point beg(-1, -1);
+	Point end(-1, -1);
 
 	double* left = new double[big[0].cols];
 	double* top = new double[big[0].rows];
@@ -1684,82 +1968,128 @@ bool Preprocessing::RotateAndCut(Mat* big, int& counter)
 
 	}
 
-	//double val = 255 * 200 * big[0].rows / 4500;
-
-	//double val1 = 255 * 50 * big[0].cols / 4500;
-
 	double maxi = 0.;
 	int step = 1;
-	
-	for (int i = 0; i < big[0].cols-step; i++)
+
+	for (int i = 0; i < big[0].cols - step; i++)
 	{
 		if (left[i + step] - left[i] > maxi)
 		{
 			maxi = (left[i + step] - left[i])*5.;
 			beg.x = i + step;
-			
+
 		}
 	}
 	maxi = 0.;
-	for (int i = big[0].cols - 1; i >= beg.x+200; i--)
+	for (int i = big[0].cols - 1; i >= beg.x + 200; i--)
 	{
 		if (left[i - step] - left[i] > maxi)
 		{
 			maxi = (left[i - step] - left[i])*5.;
 			end.x = i - step;
-			
+
 		}
 	}
-
-	double length = end.x - beg.x;
-	if (length <= 0)
-	{
-		counter = 4000;
-
-		big[0].release();
-		src[0].copyTo(big[0]);
-		src[0].release();
-
-		return false;
-	}
-
-	Preprocessing::Rotate(src, ang);
-
-	int adds_left =10. * length / 100.0;
-
-	int adds_right = 5. * length / 100.0;
-
+	Point ret(beg.x, end.x);
+	return ret;
 	
-
-	if (beg.x - adds_left>0)
-		beg.x -= adds_left;
-
-	if (end.x + adds_right<big[0].cols - 1)
-		end.x += adds_right;
-
-	/*if (beg.y - 50>0)
-		beg.y -= 50;*/
-
-	/*if (end.y + 50<big[0].rows - 1)
-		end.y += 50;*/
-
-	/*if (beg.y>100)
-	beg.y = 0;
-
-	if (end.y<big[0].rows-100)
-	end.y = big[0].rows - 1;*/
-
-	beg.y = 0;
-	end.y = big[0].rows - 1;
-
-
-	Preprocessing::ChangeFrame(src, beg, end);
-	big[0].release();
-	src[0].copyTo(big[0]);
-	src[0].release();
-
-	return true;
 }
+
+//bool Preprocessing::RotateAndCut2(Mat* big, int& counter)
+//{
+//	Mat* src = new Mat();
+//	big[0].copyTo(src[0]);
+//	double ang = 0.0;
+//	bool res = Preprocessing::RotationW2(big, counter, ang);
+//	if (!res)
+//		return res;
+//	int parts = 3;
+//	int step = big[0].rows / parts-5;
+//	int mini_beg = 1000000;
+//	int maxi_end = 0;
+//
+//	imwrite("c:\\0000000aaa.jpg", big[0]);
+//
+//	for (int i = 0; i < big[0].rows-step; i += step)
+//	{
+//		Point beg(0,i);
+//		int istep = i + step;
+//		/*if (istep >= big[0].rows - 1)
+//			istep = big[0].rows - 1;*/
+//		Point end(big[0].cols, istep);
+//		Mat tmp = Preprocessing::ChangeFrame3(big, beg, end);
+//		Point rez = Preprocessing::Coord(&tmp);
+//		tmp.release();
+//		if (rez.x < mini_beg && rez.x>-1)
+//			mini_beg = rez.x;
+//		if (rez.y > maxi_end && rez.y >-1)
+//			maxi_end = rez.y;
+//	}
+//
+//	/*double ang = Preprocessing::RotationW(big);*/
+//
+//
+//	//return true;
+//	
+//
+//	//double val = 255 * 200 * big[0].rows / 4500;
+//
+//	//double val1 = 255 * 50 * big[0].cols / 4500;
+//
+//
+//	//***************************************************************************
+//
+//	double length = maxi_end - mini_beg;
+//	if (length <= 0)
+//	{
+//		counter = 4000;
+//
+//		big[0].release();
+//		src[0].copyTo(big[0]);
+//		src[0].release();
+//
+//		return false;
+//	}
+//	//**************************************************************************
+//	Preprocessing::Rotate(src, ang);
+//
+//	int adds_left = 10. * length / 100.0;
+//
+//	int adds_right = 10. * length / 100.0;
+//
+//
+//
+//	if (mini_beg - adds_left>0)
+//		mini_beg -= adds_left;
+//
+//	if (maxi_end + adds_right<big[0].cols - 1)
+//		maxi_end += adds_right;
+//
+//	/*if (beg.y - 50>0)
+//	beg.y -= 50;*/
+//
+//	/*if (end.y + 50<big[0].rows - 1)
+//	end.y += 50;*/
+//
+//	/*if (beg.y>100)
+//	beg.y = 0;
+//
+//	if (end.y<big[0].rows-100)
+//	end.y = big[0].rows - 1;*/
+//	Point beg(mini_beg,0);
+//	Point end(maxi_end, big[0].rows - 1);
+//	beg.y = 0;
+//	end.y = src[0].rows - 1;
+//
+//	
+//	Preprocessing::ChangeFrame(src, beg, end);
+//	big[0].release();
+//	src[0].copyTo(big[0]);
+//	src[0].release();
+//
+//	return true;
+//}
+
 
 void Preprocessing::WF0(Mat* src)
 {
@@ -1938,6 +2268,32 @@ void Preprocessing::DemountMount2(Mat* big)
 
 
 bool Preprocessing::PrePro(Mat* big, int& counter)
+{
+	bool res = RotateAndCut(big, counter);
+	if (!res) return res;
+	Mat* src = new Mat();
+	big[0].copyTo(src[0]);
+	SisThreshold(big);
+	Invert(big);
+	BlackFrame(big);
+	RemoveBigSmallBlobs(big);
+	Point ret = TopBottom(big);
+	if (ret.x - 10 > 0)
+		ret.x -= 10;
+	if (ret.y + 10 < big[0].rows)
+		ret.y += 10;
+
+	Point beg(0, ret.x);
+	Point end(src[0].cols, ret.y);
+	ChangeFrame(src, beg, end);
+	big[0].release();
+	src[0].copyTo(big[0]);
+	src[0].release();
+	return res;
+}
+
+
+bool Preprocessing::PrePro2(Mat* big, int& counter)
 {
 	bool res = RotateAndCut(big, counter);
 	if (!res) return res;
@@ -2317,6 +2673,117 @@ void Preprocessing::Contrast(Mat* src, int nContrast /*-100 100*/)
 
 }
 
+int Preprocessing::RemoveBigSmallBlobs3(Mat* bmp)
+{
+	double from = 500;
+	double till = 4000;
+	int width = bmp[0].cols;
+	int height = bmp[0].rows;
+
+	double onePerc = width*height / 100.0;
+	till = 0.5 * onePerc;
+	from = 0.001*onePerc;
+
+	Mat src_gray;
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, COLOR_BGR2GRAY);
+
+	int countB = 0;
+	Blob_* blobs = BlobCounter_::GetBlobs(src_gray, true, true, countB);
+	BlobsCorrection(blobs, countB, &src_gray);
+
+	till = 0.;
+	for (int i = 0; i < countB; i++)
+	{
+		//till += (blobs[i].image.cols* blobs[i].image.rows);
+		till += (blobs[i].image.rows);
+		from += (blobs[i].image.rows);
+	}
+	/*till /= (countB + 50 * countB/100);
+	from /= (countB - 50 * countB / 100);*/
+
+	till = till / countB;
+	till += (50 * till / 100);
+	from = from / countB;
+	from -= (50 * from / 100);
+
+	Blob_* few_blobs = new Blob_[countB];
+	int counter = 0;
+	for (int i = 0; i < countB; i++)
+	{
+		double area = blobs[i].area;
+		bool tmp = true;// dif < 20;
+		double prop = 1.* blobs[i].image.rows / blobs[i].image.cols;
+		bool cond1 = !(prop > 5 && blobs[i].image.rows > 20);
+		//if (area > from && area <= till && tmp)
+		if (blobs[i].image.rows > from && blobs[i].image.rows < till && blobs[i].image.cols<bmp[0].cols / 2 && cond1)
+			{
+				few_blobs[counter++] = blobs[i];
+			}
+	}
+
+	Mat res_mat(bmp[0].rows, bmp[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, few_blobs, counter, 1);
+	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
+	return counter;
+}
+
+
+int Preprocessing::RemoveBigSmallBlobs4(Mat* bmp)
+{
+	double from = 500;
+	double till = 4000;
+	int width = bmp[0].cols;
+	int height = bmp[0].rows;
+
+	double onePerc = width*height / 100.0;
+	till = 1. * onePerc;
+	from = 0.001*onePerc;
+
+	Mat src_gray;
+	int lp = bmp[0].type();
+	if (lp != 0)
+		cvtColor(bmp[0], src_gray, COLOR_BGR2GRAY);
+
+	int countB = 0;
+	Blob_* blobs = BlobCounter_::GetBlobs(src_gray, true, true, countB);
+	BlobsCorrection(blobs, countB, &src_gray);
+
+	till = 0.;
+	for (int i = 0; i < countB; i++)
+	{
+		till +=  blobs[i].image.rows;
+		from += blobs[i].image.rows;
+	}
+	till = till/countB;
+	till += (50 * till / 100);
+	from = from / countB;
+	from -= (50 * from / 100);
+
+
+
+	Blob_* few_blobs = new Blob_[countB];
+	int counter = 0;
+	for (int i = 0; i < countB; i++)
+	{
+		double height = blobs[i].image.rows;
+		bool tmp = true;// dif < 20;
+		double prop = 1.* blobs[i].image.rows / blobs[i].image.cols;
+		bool cond1 = !(prop > 5 && blobs[i].image.rows > 20);
+		//if (height > from && height <= till && tmp)
+			if (height > from && height < till /*&& blobs[i].image.cols<bmp[0].cols / 2 && cond1*/)
+			{
+				few_blobs[counter++] = blobs[i];
+			}
+	}
+
+	Mat res_mat(bmp[0].rows, bmp[0].cols, CV_8UC1, Scalar(0));
+	res_mat = BlobsBuild_::PutBlobsBlackWhite(res_mat, few_blobs, counter, 1);
+	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
+	return counter;
+}
+
 int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
 {
 	double from = 100;
@@ -2346,7 +2813,7 @@ int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
 		double prop = 1.* blobs[i].image.rows / blobs[i].image.cols;
 		bool cond1 = !(prop > 5 && blobs[i].image.rows > 20);
 		if (area > from && area <= till && tmp)
-			if (area > from && blobs[i].area < till && blobs[i].image.cols<bmp[0].cols/2 && cond1)
+			if (area > from && blobs[i].area < till && blobs[i].image.cols<bmp[0].cols / 2 && cond1)
 			{
 				few_blobs[counter++] = blobs[i];
 			}
@@ -2357,6 +2824,7 @@ int Preprocessing::RemoveBigSmallBlobs(Mat* bmp)
 	cvtColor(res_mat, bmp[0], COLOR_GRAY2BGR);
 	return counter;
 }
+
 
 int Preprocessing::RemoveBigSmallBlobs2(Mat* bmp)
 {
@@ -2577,7 +3045,7 @@ Point Preprocessing::TopBottom(Mat* bmp)
 	}
 
 	int stride = bmp[0].step;
-	int val = 20;
+	int val = 50;
 	//unsigned char *src_ = (unsigned char*)(src[0].data);
 	unsigned char *bmp_ = (unsigned char*)(bmp[0].data);
 	for (int i = 0; i < bmp[0].rows; i++)
@@ -2746,16 +3214,51 @@ int Preprocessing::FindBlob(int x, int y, Blob_* blobs, int counter)
 
 void Preprocessing::BlobsCorrection(Blob_* blobs, int count_blobs, Mat* big)
 {
+	
+	int w = big[0].cols;
+	int h = big[0].rows;
 	for (int i = 0; i < count_blobs; i++)
 	{
 		int width = blobs[i].image.cols;
 		int height = blobs[i].image.rows;
-		Point beg = blobs[i].location;
-		Point end(beg.x + width, beg.y+height);
 
-		blobs[i].image.release();
-		blobs[i].image = ChangeFrame3(big, beg, end);
-		//BlobsCorrectionPixels(&blobs[i].image);
+		if (width > 0 && height > 0)
+		{
+
+
+			Point beg = blobs[i].location;
+
+
+
+
+
+			int beg_x = beg.x + width;
+			int beg_y = beg.y + height;
+
+
+
+			if (beg_x >= big[0].cols - 1)
+				beg_x = big[0].cols - 1;
+			if (beg_y >= big[0].rows - 1)
+				beg_y = big[0].rows - 1;
+
+			Point end(beg_x, beg_y);
+
+			int e1 = beg.x;
+			int e2 = beg.y;
+
+			int e3 = end.x;
+			int e4 = end.y;
+
+			blobs[i].image.release();
+			blobs[i].image = ChangeFrame3(big, beg, end);
+			if (i == count_blobs - 2)
+			{
+				int rr = 56;
+
+			}
+			//BlobsCorrectionPixels(&blobs[i].image);
+		}
 	}
 }
 
@@ -2763,10 +3266,12 @@ void Preprocessing::BlobsCorrectionPixels(Mat* src)
 {
 	int  width = src[0].cols;
 	int height = src[0].rows;
+	if (width < 15 || height < 25)
+		return;
 	Point beg(0, 0);
 	Point end(src[0].cols - 1, src[0].rows - 1);
 	int stride = src[0].step;
-	int val = 6;
+	int val = 3;
 	unsigned char *src_ = (unsigned char*)(src[0].data);
 
 	int i = 0;
@@ -3353,4 +3858,27 @@ void Preprocessing::MSER_Test(Mat* src)
 
 
 
+}
+
+
+double Preprocessing::IsItScan(Mat* big)
+{
+	int stride_big = big[0].step;
+	unsigned char *big_ = (unsigned char*)(big[0].data);
+	double val = 0;
+	for (int i = 0; i < big[0].rows; i++)
+	{
+		int dop_big = stride_big * i;
+		for (int j = 0; j < big[0].cols; j++)
+		{
+			int dopp_big = dop_big + j * 3;
+
+			val += (big_[dopp_big] + big_[dopp_big+1] + big_[dopp_big+2] );
+
+		}
+
+	}
+
+	val /= 3 * big[0].rows*big[0].cols;
+	return val;
 }

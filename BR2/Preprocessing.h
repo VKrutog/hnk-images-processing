@@ -103,6 +103,16 @@ public:
 	static std::string GetCode3(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	static void CodeCorrection3(Blob_* blobs, int counter, double ht, double wt);
 	static void MSER_Test(Mat* src);
+	static void Benk2(Mat* bmp);
+	static int RemoveBigSmallBlobs3(Mat* bmp);
+	static void Bilateral(Mat* bmp);
+	/*static bool RotateAndCut2(Mat* big, int& counter);*/
+	static bool PrePro2(Mat* big, int& counter);
+	static Point Coord(Mat* big);
+	static int RemoveBigSmallBlobs4(Mat* bmp);
+	static double IsItScan(Mat* big);
+	static bool TicketYesNo_0_old(Mat* _src, int& counter);
+	static bool RotationW3(Mat* src, int& code, double& angle);
 	
 };
 
