@@ -20,7 +20,10 @@ Mat BlobsBuild_::PutBlobsBlackWhite(Mat src, Blob_* blobs, int blobsCount, int W
 
 	for (int i = 0; i < blobsCount; i++)
 	{
-
+		if (i == 388)
+		{
+			int uio = blobsCount;
+		}
 		int yy = blobs[i].location.y;
 		int xx = blobs[i].location.x;
 
@@ -36,27 +39,90 @@ Mat BlobsBuild_::PutBlobsBlackWhite(Mat src, Blob_* blobs, int blobsCount, int W
 
 		for (int y = 0; y < heightBlob; y++)
 		{
-			int dop = srcStride*(y + blobs[i].location.y);
-			int bdop = dstStride*y;
-			for (int x = 0; x < widthBlob; x++)
+			if (y + blobs[i].location.y < src.rows)
 			{
-				int dopp = dop + (x + blobs[i].location.x);// *3;
-				int bdopp = bdop + x;
-				if (dst_[bdopp] == clr)
+				int dop = srcStride*(y + blobs[i].location.y);
+				int bdop = dstStride*y;
+				for (int x = 0; x < widthBlob; x++)
 				{
-					src_[dopp] = dst_[bdopp];
-					/*src_[dopp + 1] = dst_[bdopp];
-					src_[dopp + 2] = dst_[bdopp];*/
+					if (x + blobs[i].location.x < src.cols)
+					{
+						int dopp = dop + (x + blobs[i].location.x);// *3;
+						int bdopp = bdop + x;
+						if (dst_[bdopp] == clr)
+						{
+							src_[dopp] = dst_[bdopp];
+							/*src_[dopp + 1] = dst_[bdopp];
+							src_[dopp + 2] = dst_[bdopp];*/
+						}
+					}
+
 				}
-
 			}
-
 		}
 
 	}
 	
 	return src;
 	
+}
+
+
+void BlobsBuild_::PutBlobsBlackWhite(Mat* _src, Blob_* blobs, int blobsCount, int WhiteNoBlack)
+{
+	unsigned char clr = 255;
+	if (WhiteNoBlack == 0)
+		clr = 0;
+	unsigned char* src_ = (unsigned char*)_src[0].data;
+	int srcStride = _src[0].step;
+
+	for (int i = 0; i < blobsCount; i++)
+	{
+		if (i == 388)
+		{
+			int uio = blobsCount;
+		}
+		int yy = blobs[i].location.y;
+		int xx = blobs[i].location.x;
+
+
+		int widthBlob = blobs[i].image.cols;
+		int heightBlob = blobs[i].image.rows;
+
+		int dstStride = blobs[i].image.step;
+
+
+		unsigned char* dst_ = (unsigned char*)blobs[i].image.data;
+
+
+		for (int y = 0; y < heightBlob; y++)
+		{
+			if (y + blobs[i].location.y < _src[0].rows)
+			{
+				int dop = srcStride*(y + blobs[i].location.y);
+				int bdop = dstStride*y;
+				for (int x = 0; x < widthBlob; x++)
+				{
+					if (x + blobs[i].location.x < _src[0].cols)
+					{
+						int dopp = dop + (x + blobs[i].location.x);// *3;
+						int bdopp = bdop + x;
+						if (dst_[bdopp] == clr)
+						{
+							src_[dopp] = dst_[bdopp];
+							/*src_[dopp + 1] = dst_[bdopp];
+							src_[dopp + 2] = dst_[bdopp];*/
+						}
+					}
+
+				}
+			}
+		}
+
+	}
+
+	
+
 }
 
 
