@@ -138,44 +138,47 @@ void BlobCounter_::ProcessImage(Mat srcImg, bool WhiteNoBlack)
 					{
 						int	l1 = objectLabels[dopp];
 						int l2 = objectLabels[dopp + 1 - width];
-					
-						if ((l1 != l2) && (map[l1] != map[l2]))
+
+						if (l1 >= 0 && l2 >= 0 && l1<maxObjects && l2<maxObjects)
 						{
-
-							if (map[l1] == l1)
+							if ((l1 != l2) && (map[l1] != map[l2]))
 							{
 
-								map[l1] = map[l2];
-							}
-							else if (map[l2] == l2)
-							{
-								map[l2] = map[l1];
-							}
-							else
-							{
-
-								map[map[l1]] = map[l2];
-								map[l1] = map[l2];
-							}
-
-
-							for (int i = 0; i <= labelsCount; i++)
-							{
-								if (map[i] != i)
+								if (map[l1] == l1)
 								{
 
-									int j = map[i];
-									while (j != map[j])
+									map[l1] = map[l2];
+								}
+								else if (map[l2] == l2)
+								{
+									map[l2] = map[l1];
+								}
+								else
+								{
+
+									map[map[l1]] = map[l2];
+									map[l1] = map[l2];
+								}
+
+
+								for (int i = 0; i <= labelsCount; i++)
+								{
+									if (map[i] != i)
 									{
-										j = map[j];
+
+										int j = map[i];
+										while (j != map[j])
+										{
+											j = map[j];
+										}
+
+										map[i] = j;
+
 									}
-
-									map[i] = j;
-
 								}
 							}
 						}
-					
+
 					}
 				}
 
@@ -242,7 +245,7 @@ void BlobCounter_::ProcessImage(Mat srcImg, bool WhiteNoBlack)
 
 	for (int i = 0, n = width * height; i < n; i++)
 	{
-
+		if (objectLabels[i] >= 0 && objectLabels[i]<maxObjects)
 			objectLabels[i] = reMap[objectLabels[i]];
 	}
 	delete[] map;
@@ -375,7 +378,8 @@ Blob_* BlobCounter_::GetBlobs(Mat srcImg, bool WithMorpho, bool WhiteNoBlack, in
 				continue;
 
 
-			
+			if (label >= 0 && label<count-1)
+			{
 				if (x < x1[label])
 				{
 					x1[label] = x;
@@ -392,7 +396,7 @@ Blob_* BlobCounter_::GetBlobs(Mat srcImg, bool WithMorpho, bool WhiteNoBlack, in
 				{
 					y2[label] = y;
 				}
-			
+			}
 		}
 	}
 	

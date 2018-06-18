@@ -62,7 +62,7 @@ public:
 	
 
 	void SetEDB(std::string _edb_file_name);
-	std::string* Recognition::SetImage(Mat* _src, int& string_counter);
+	std::string* SetImage(Mat* _src, int& string_counter);
 	Blob_* GetBlobs(int& _blob_counter);
 	void ReadEDB(std::string _edb_file_name);
 	void WriteEDB(std::string _edb_file_name);
@@ -75,6 +75,10 @@ public:
 	std::string edb_file_name;
 	void NewImage();
 	void SetBlobSourceImage(Mat* src);
+	std::string* SetImage2(Mat* _src, int& string_counter);
+	std::string* SetImage3(Mat* _src, int& string_counter);
+	std::string* SetImage4(Mat* _src, int& string_counter);
+	std::string* SetImage5(Mat* _src, int& string_counter);
 	
 
 private:
@@ -110,5 +114,12 @@ private:
 	std::string GetCode3(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string GetCode4(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string* Get_Strings2(int& string_counter);
+	bool TicketYesNo2(Mat* src, Mat* big, int& counter);
+	Mat ReProcessing2(Mat* _src);
+	void Marking3(Mat* _src, Mat* bmp, int& counter, double ht, double wt);
+	Mat ReProcessing3(Mat* _src);
+	bool TicketYesNo3(Mat* src, Mat* big, int& counter);
+	bool PrePro2(Mat* src, Mat* big, int& counter);
+	Mat ReProcessing4(Mat* _src);
 };
 
