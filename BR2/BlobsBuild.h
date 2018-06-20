@@ -15,7 +15,8 @@ public:
 public:
 	static Mat PutBlobsBlackWhite(Mat src, Blob_* blobs, int blobsCount, int WhiteNoBlack);
 	static Mat PutBlobsBlackWhiteCentre(Mat src, Blob_* blobs, int blobsCount, int WhiteNoBlack, Point& p, bool gravy);
-	static Mat BlobsBuild_::PutBlobsBlackWhite3(Mat src, Blob_* blobs, int blobsCount, int WhiteNoBlack);
+	static Mat PutBlobsBlackWhite3(Mat src, Blob_* blobs, int blobsCount, int WhiteNoBlack);
+	static void PutBlobsBlackWhite(Mat* _src, Blob_* blobs, int blobsCount, int WhiteNoBlack);
 	
 };
 

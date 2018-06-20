@@ -198,6 +198,10 @@ private: System::Windows::Forms::ToolStripMenuItem^  eDBManagerToolStripMenuItem
 private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem2;
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator3;
 private: System::Windows::Forms::ToolStripMenuItem^  saveBlobSrcToolStripMenuItem;
+private: System::Windows::Forms::Button^  button33;
+private: System::Windows::Forms::Button^  button34;
+private: System::Windows::Forms::Button^  button35;
+private: System::Windows::Forms::Button^  button36;
 
 
 
@@ -252,6 +256,10 @@ private: System::ComponentModel::IContainer^  components;
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage4 = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox5 = (gcnew System::Windows::Forms::GroupBox());
+			this->button36 = (gcnew System::Windows::Forms::Button());
+			this->button35 = (gcnew System::Windows::Forms::Button());
+			this->button34 = (gcnew System::Windows::Forms::Button());
+			this->button33 = (gcnew System::Windows::Forms::Button());
 			this->button32 = (gcnew System::Windows::Forms::Button());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
@@ -313,6 +321,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->saveImageToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->saveBlobToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->saveBlobSrcToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->saveScriptToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->closeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -324,7 +333,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->loadEDBToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->saveEDBToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->saveBlobSrcToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->panel1->SuspendLayout();
 			this->panel2->SuspendLayout();
 			this->panel3->SuspendLayout();
@@ -458,23 +466,74 @@ private: System::ComponentModel::IContainer^  components;
 			// 
 			// groupBox5
 			// 
+			this->groupBox5->Controls->Add(this->button36);
+			this->groupBox5->Controls->Add(this->button35);
+			this->groupBox5->Controls->Add(this->button34);
+			this->groupBox5->Controls->Add(this->button33);
 			this->groupBox5->Controls->Add(this->button32);
 			this->groupBox5->Dock = System::Windows::Forms::DockStyle::Left;
 			this->groupBox5->Location = System::Drawing::Point(0, 0);
 			this->groupBox5->Name = L"groupBox5";
-			this->groupBox5->Size = System::Drawing::Size(166, 335);
+			this->groupBox5->Size = System::Drawing::Size(332, 335);
 			this->groupBox5->TabIndex = 5;
 			this->groupBox5->TabStop = false;
 			this->groupBox5->Text = L"functions";
 			// 
+			// button36
+			// 
+			this->button36->Dock = System::Windows::Forms::DockStyle::Top;
+			this->button36->Location = System::Drawing::Point(3, 128);
+			this->button36->Name = L"button36";
+			this->button36->Size = System::Drawing::Size(326, 28);
+			this->button36->TabIndex = 4;
+			this->button36->Text = L"Recognize 5 (nice cutting) bold";
+			this->button36->UseVisualStyleBackColor = true;
+			this->button36->Click += gcnew System::EventHandler(this, &MainForm::button36_Click);
+			// 
+			// button35
+			// 
+			this->button35->Dock = System::Windows::Forms::DockStyle::Top;
+			this->button35->Location = System::Drawing::Point(3, 100);
+			this->button35->Name = L"button35";
+			this->button35->Size = System::Drawing::Size(326, 28);
+			this->button35->TabIndex = 3;
+			this->button35->Text = L"Recognize 4 (nice cutting) ";
+			this->button35->UseVisualStyleBackColor = true;
+			this->button35->Click += gcnew System::EventHandler(this, &MainForm::button35_Click);
+			// 
+			// button34
+			// 
+			this->button34->Dock = System::Windows::Forms::DockStyle::Top;
+			this->button34->Enabled = false;
+			this->button34->Location = System::Drawing::Point(3, 72);
+			this->button34->Name = L"button34";
+			this->button34->Size = System::Drawing::Size(326, 28);
+			this->button34->TabIndex = 2;
+			this->button34->Text = L"Recognize 3 (enhancing printing) bold";
+			this->button34->UseVisualStyleBackColor = true;
+			this->button34->Click += gcnew System::EventHandler(this, &MainForm::button34_Click);
+			// 
+			// button33
+			// 
+			this->button33->Dock = System::Windows::Forms::DockStyle::Top;
+			this->button33->Enabled = false;
+			this->button33->Location = System::Drawing::Point(3, 44);
+			this->button33->Name = L"button33";
+			this->button33->Size = System::Drawing::Size(326, 28);
+			this->button33->TabIndex = 1;
+			this->button33->Text = L"Recognize 2 (enhancing printing)";
+			this->button33->UseVisualStyleBackColor = true;
+			this->button33->Click += gcnew System::EventHandler(this, &MainForm::button33_Click_1);
+			// 
 			// button32
 			// 
 			this->button32->Dock = System::Windows::Forms::DockStyle::Top;
+			this->button32->Enabled = false;
 			this->button32->Location = System::Drawing::Point(3, 16);
 			this->button32->Name = L"button32";
-			this->button32->Size = System::Drawing::Size(160, 28);
+			this->button32->Size = System::Drawing::Size(326, 28);
 			this->button32->TabIndex = 0;
-			this->button32->Text = L"Recognize";
+			this->button32->Text = L"Recognize 1 (good samples)";
 			this->button32->UseVisualStyleBackColor = true;
 			this->button32->Click += gcnew System::EventHandler(this, &MainForm::button32_Click);
 			// 
@@ -628,7 +687,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->button14->Name = L"button14";
 			this->button14->Size = System::Drawing::Size(162, 28);
 			this->button14->TabIndex = 0;
-			this->button14->Text = L"transpose";
+			this->button14->Text = L"Bilateral";
 			this->button14->UseVisualStyleBackColor = true;
 			this->button14->Click += gcnew System::EventHandler(this, &MainForm::button14_Click);
 			// 
@@ -1077,52 +1136,59 @@ private: System::ComponentModel::IContainer^  components;
 			// loadImageToolStripMenuItem
 			// 
 			this->loadImageToolStripMenuItem->Name = L"loadImageToolStripMenuItem";
-			this->loadImageToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->loadImageToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->loadImageToolStripMenuItem->Text = L"Load image";
 			this->loadImageToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::loadToolStripMenuItem_Click);
 			// 
 			// loadScriptToolStripMenuItem
 			// 
 			this->loadScriptToolStripMenuItem->Name = L"loadScriptToolStripMenuItem";
-			this->loadScriptToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->loadScriptToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->loadScriptToolStripMenuItem->Text = L"Load script";
 			this->loadScriptToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::loadScriptToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this->toolStripSeparator1->Name = L"toolStripSeparator1";
-			this->toolStripSeparator1->Size = System::Drawing::Size(149, 6);
+			this->toolStripSeparator1->Size = System::Drawing::Size(140, 6);
 			// 
 			// saveImageToolStripMenuItem
 			// 
 			this->saveImageToolStripMenuItem->Name = L"saveImageToolStripMenuItem";
-			this->saveImageToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->saveImageToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->saveImageToolStripMenuItem->Text = L"Save image";
 			this->saveImageToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveImageToolStripMenuItem_Click);
 			// 
 			// saveBlobToolStripMenuItem
 			// 
 			this->saveBlobToolStripMenuItem->Name = L"saveBlobToolStripMenuItem";
-			this->saveBlobToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->saveBlobToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->saveBlobToolStripMenuItem->Text = L"Save blob";
 			this->saveBlobToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveBlobToolStripMenuItem_Click);
+			// 
+			// saveBlobSrcToolStripMenuItem
+			// 
+			this->saveBlobSrcToolStripMenuItem->Name = L"saveBlobSrcToolStripMenuItem";
+			this->saveBlobSrcToolStripMenuItem->Size = System::Drawing::Size(143, 22);
+			this->saveBlobSrcToolStripMenuItem->Text = L"Save blob src";
+			this->saveBlobSrcToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveBlobSrcToolStripMenuItem_Click);
 			// 
 			// saveScriptToolStripMenuItem
 			// 
 			this->saveScriptToolStripMenuItem->Name = L"saveScriptToolStripMenuItem";
-			this->saveScriptToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->saveScriptToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->saveScriptToolStripMenuItem->Text = L"Save script";
 			this->saveScriptToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveScriptToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this->toolStripSeparator2->Name = L"toolStripSeparator2";
-			this->toolStripSeparator2->Size = System::Drawing::Size(149, 6);
+			this->toolStripSeparator2->Size = System::Drawing::Size(140, 6);
 			// 
 			// closeToolStripMenuItem
 			// 
 			this->closeToolStripMenuItem->Name = L"closeToolStripMenuItem";
-			this->closeToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->closeToolStripMenuItem->Size = System::Drawing::Size(143, 22);
 			this->closeToolStripMenuItem->Text = L"Close";
 			this->closeToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::closeToolStripMenuItem_Click);
 			// 
@@ -1182,13 +1248,6 @@ private: System::ComponentModel::IContainer^  components;
 			this->timer1->Interval = 500;
 			this->timer1->Tick += gcnew System::EventHandler(this, &MainForm::timer1_Tick);
 			// 
-			// saveBlobSrcToolStripMenuItem
-			// 
-			this->saveBlobSrcToolStripMenuItem->Name = L"saveBlobSrcToolStripMenuItem";
-			this->saveBlobSrcToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-			this->saveBlobSrcToolStripMenuItem->Text = L"Save blob src";
-			this->saveBlobSrcToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveBlobSrcToolStripMenuItem_Click);
-			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -1231,7 +1290,8 @@ private: System::ComponentModel::IContainer^  components;
 
 	private: System::Void Show()
 	{
-
+		timer1->Enabled = false;
+		GC::Collect();
 		if (src_mat != NULL)
 			imshow("Source", src_mat[0]);
 		
@@ -1242,9 +1302,9 @@ private: System::ComponentModel::IContainer^  components;
 			Mat tmp;
 			Mat tmp1;
 			Mat tmp2;
-			res_mat[0].copyTo(tmp);
-			blobs[current_blob].image.copyTo(tmp1);
-			blobs[current_blob].src.copyTo(tmp2);
+			tmp = res_mat[0].clone();
+			tmp1 = blobs[current_blob].image.clone();
+			tmp2 = blobs[current_blob].src.clone();
 			/*Preprocessing::ReSize3(&tmp1, 100, 150);
 			Preprocessing::SisThreshold(&tmp1);*/
 			imshow("Recognition", tmp1);
@@ -1266,11 +1326,11 @@ private: System::ComponentModel::IContainer^  components;
 		}
 		else
 		{
-			if (res_mat != NULL)
+			//if (res_mat != NULL)
 				imshow("Processed", res_mat[0]);
 			labelBlobs->Text = "Blobs. " + current_blob.ToString() + "(" + blobs_counter.ToString() + ")" + " Recognition-???";
 		}
-		
+		timer1->Enabled = true;
 	}
 
 	private: System::Void SetScript()
@@ -1284,6 +1344,7 @@ private: System::ComponentModel::IContainer^  components;
 		this->Close();
 	}
 	private: System::Void loadToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		timer1->Enabled = false;
 		GC::Collect();
 		OpenFileDialog^ od = gcnew  OpenFileDialog;
 		od->Multiselect = true;
@@ -1292,51 +1353,52 @@ private: System::ComponentModel::IContainer^  components;
 		od->RestoreDirectory = true;
 		if (od->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 		{
-			
+			//rec->NewImage();
 			if (od->FileNames->Length > 1) return;
 
-			
 
-			if (src_mat != NULL)
-				src_mat[0].release();
-
+			src_mat[0].release();
+			res_mat[0].release();
+			GC::Collect();
 			System::String^ str = od->FileNames[0]->ToString();
 			lblFileName->Text = str;
 			cv::String t = cv::String();
 			for (int ii = 0; ii < str->Length; ii++)
 				t += str[ii];
 
-			src_mat[0] = imread(t, IMREAD_COLOR);
-			if (res_mat != NULL)
-				res_mat[0].release();
-			src_mat[0].copyTo(res_mat[0]);
-			blobs_counter = 0;
 			rec->NewImage();
+
+			src_mat[0] = imread(t, IMREAD_COLOR);
+
+			res_mat[0] = src_mat[0].clone();
+			
+			
+			blobs_counter = 0;
 			Show();
 			lblTicketYesNo->Text = " Ticket = ???";
 			lblCounterBlobs->Text = "???";
 		}
 		
 		GC::Collect();
-		
+		timer1->Enabled = true;
 	}
 
 	private: System::Void New()
 	{
+		timer1->Enabled = false;
 		res_mat[0].release();
-		src_mat[0].copyTo(res_mat[0]);
+		res_mat[0] = src_mat[0].clone();
 
 		if (blobs_counter > 0)
 		{
-			for (int i = 0; i < blobs_counter; i++)
-			{
-				blobs[i].image.release();
-			}
+			delete[] blobs;
+			//rec->NewImage();
 			//delete blobs;
 			blobs_counter = 0;
+			rec->blobs_counter = 0;
 			current_blob = 0;
 		}
-
+		timer1->Enabled = true;
 		Show();
 	}
 
@@ -1386,6 +1448,7 @@ private: System::ComponentModel::IContainer^  components;
 		Preprocessing::Sharpen(res_mat[0], tmp);
 		tmp.copyTo(res_mat[0]);
 		tmp.release();
+
 	}
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
@@ -1399,7 +1462,7 @@ private: System::ComponentModel::IContainer^  components;
 	}
 	private: System::Void saveImageToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
-		Mat tmp = res_mat[0];
+		Mat tmp = res_mat[0].clone();
 		SaveFileDialog^ sd = gcnew SaveFileDialog;
 		sd->FileName = "";
 		sd->Filter = "Bitmap files (*.bmp)| *.bmp|Enhanced Metafile files (*.emf)|*.emf|CompuServe Gif files (*.gif)|*.gif|Icon files (*.ico)|*.ico|Jpeg compressed files (*.jpg)|*.jpg|Portable Network Graphics files (*.png)|*.png|Tagged Image files (*.tiff)|*.tiff|Windows meta files (*.wmf)|*.wmf|Mimas DFD files (*.dfd)|*.dfd";
@@ -1415,6 +1478,7 @@ private: System::ComponentModel::IContainer^  components;
 				t += str[ii];
 			imwrite(t, tmp);
 		}
+		tmp.release();
 	}
 	private: System::Void SetListBox(int item){
 
@@ -1682,7 +1746,8 @@ private: System::ComponentModel::IContainer^  components;
 
 			 private: System::Void Transpose()
 			 {
-				 Preprocessing::Transpose_(res_mat);
+				 Preprocessing::Bilateral(res_mat);
+				 //Preprocessing::Transpose_(res_mat);
 			 }
 	private: System::Void button13_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
@@ -1733,8 +1798,8 @@ private: bool TicketYesNo(int& counter)
 	}
 			 private: System::Void Sobel()
 			 {
-
-				 Preprocessing::Sobel_(res_mat);
+				 Preprocessing::Benk2(res_mat);
+				 //Preprocessing::Sobel_(res_mat);
 				 //Preprocessing::Sobel2(res_mat);
 
 			 }
@@ -1773,7 +1838,7 @@ private: bool TicketYesNo(int& counter)
 	}
 			 private: System::Void FewBlobs()
 			 {
-				 Preprocessing::RemoveBigSmallBlobs(res_mat);
+				 Preprocessing::RemoveBigSmallBlobs3(res_mat);
 				 /*int res = Preprocessing::FewBlobsTop2(res_mat);
 				 lblCounterBlobs->Text = res.ToString();*/
 
@@ -1881,15 +1946,15 @@ private: bool Cutting(int& counter)
 			 }
 	private: System::Void button31_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
-		/*TopBottom();
+		TopBottom();
 		Show();
-		SetListBox(22);*/
+		SetListBox(22);
 		/*Preprocessing::VertStich(res_mat);
 		Show();*/
 		//Preprocessing::HorStich(res_mat, 3/*av_w / 12 + 1*/);
 
-		Preprocessing::MSER_Test(res_mat);
-		Show();
+		/*Preprocessing::MSER_Test(res_mat);
+		Show();*/
 	}
 			 private: System::Void TopBottom()
 			 {
@@ -2021,7 +2086,7 @@ private: bool Cutting(int& counter)
 		
 		if (blobs_counter <= 0) return;
 		
-		Mat tmp = blobs[current_blob].image;
+		Mat tmp = blobs[current_blob].image.clone();
 		SaveFileDialog^ sd = gcnew SaveFileDialog;
 		sd->FileName = "";
 		sd->Filter = "Bitmap files (*.bmp)| *.bmp|Enhanced Metafile files (*.emf)|*.emf|CompuServe Gif files (*.gif)|*.gif|Icon files (*.ico)|*.ico|Jpeg compressed files (*.jpg)|*.jpg|Portable Network Graphics files (*.png)|*.png|Tagged Image files (*.tiff)|*.tiff|Windows meta files (*.wmf)|*.wmf|Mimas DFD files (*.dfd)|*.dfd";
@@ -2037,6 +2102,7 @@ private: bool Cutting(int& counter)
 				t += str[ii];
 			imwrite(t, tmp);
 		}
+		tmp.release();
 	}
 	private: System::Void dBToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
@@ -2047,6 +2113,13 @@ private: bool Cutting(int& counter)
 	}
 	private: System::Void button32_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
+		
+		delete rec;
+		rec = new Recognition();
+		return;
+		
+		
+		
 		int str_counter = 0;
 		current_blob = 0;
 
@@ -2155,7 +2228,7 @@ private: bool Cutting(int& counter)
 	{
 		if (blobs_counter <= 0) return;
 
-		Mat tmp = blobs[current_blob].src;
+		Mat tmp = blobs[current_blob].src.clone();
 		SaveFileDialog^ sd = gcnew SaveFileDialog;
 		sd->FileName = "";
 		sd->Filter = "Bitmap files (*.bmp)| *.bmp|Enhanced Metafile files (*.emf)|*.emf|CompuServe Gif files (*.gif)|*.gif|Icon files (*.ico)|*.ico|Jpeg compressed files (*.jpg)|*.jpg|Portable Network Graphics files (*.png)|*.png|Tagged Image files (*.tiff)|*.tiff|Windows meta files (*.wmf)|*.wmf|Mimas DFD files (*.dfd)|*.dfd";
@@ -2171,6 +2244,162 @@ private: bool Cutting(int& counter)
 				t += str[ii];
 			imwrite(t, tmp);
 		}
+		tmp.release();
+	}
+	private: System::Void button33_Click_1(System::Object^  sender, System::EventArgs^  e) 
+	{
+		int str_counter = 0;
+		current_blob = 0;
+
+		std::string* ret = rec->SetImage2(res_mat, str_counter);
+
+		//rec->Get_Strings();
+		if (str_counter == 1)
+		{
+			System::String^ code = gcnew System::String(ret[0].c_str());
+			MessageBox::Show("Error. Code=" + code, "Warning");
+			blobs_counter = 0;
+			return;
+		}
+
+		//rec->SetBlobSourceImage(src_mat);
+		//rec->ReProcessing(src_mat);
+
+		int t = 0;
+		blobs = rec->GetBlobs(t);
+		blobs_counter = t;
+		trackBarBlobs->Value = 0;
+		trackBarBlobs->Maximum = blobs_counter - 1;
+
+
+		System::String^ tmp = gcnew System::String(rec->edb_file_name.c_str());
+		edbForm->lblNameEDB->Text = tmp;
+		edbForm->NewListBoxEDB();
+		listBoxScript->Items->Clear();
+		for (int i = 0; i < str_counter; i++)
+		{
+			System::String^ tmp = gcnew System::String(ret[i].c_str());
+			listBoxScript->Items->Add(tmp);
+		}
+		Show();
+	}
+	private: System::Void button34_Click(System::Object^  sender, System::EventArgs^  e) 
+	{
+		int str_counter = 0;
+		current_blob = 0;
+
+		std::string* ret = rec->SetImage3(res_mat, str_counter);
+
+		//rec->Get_Strings();
+		if (str_counter == 1)
+		{
+			System::String^ code = gcnew System::String(ret[0].c_str());
+			MessageBox::Show("Error. Code=" + code, "Warning");
+			blobs_counter = 0;
+			return;
+		}
+
+		//rec->SetBlobSourceImage(src_mat);
+		//rec->ReProcessing(src_mat);
+
+		int t = 0;
+		blobs = rec->GetBlobs(t);
+		blobs_counter = t;
+		trackBarBlobs->Value = 0;
+		trackBarBlobs->Maximum = blobs_counter - 1;
+
+
+		System::String^ tmp = gcnew System::String(rec->edb_file_name.c_str());
+		edbForm->lblNameEDB->Text = tmp;
+		edbForm->NewListBoxEDB();
+		listBoxScript->Items->Clear();
+		for (int i = 0; i < str_counter; i++)
+		{
+			System::String^ tmp = gcnew System::String(ret[i].c_str());
+			listBoxScript->Items->Add(tmp);
+		}
+		Show();
+	}
+	private: System::Void button35_Click(System::Object^  sender, System::EventArgs^  e) 
+	{
+		int str_counter = 0;
+		current_blob = 0;
+		timer1->Enabled = false;
+		
+
+		std::string* ret = rec->SetImage(res_mat, str_counter, false);
+
+
+
+		//rec->Get_Strings();
+		if (str_counter == 1)
+		{
+			System::String^ code = gcnew System::String(ret[0].c_str());
+			MessageBox::Show("Error. Code=" + code, "Warning");
+			blobs_counter = 0;
+			return;
+		}
+
+		//rec->SetBlobSourceImage(src_mat);
+		//rec->ReProcessing(src_mat);
+
+		int t = 0;
+		blobs = rec->GetBlobs(t);
+		blobs_counter = t;
+		trackBarBlobs->Value = 0;
+		trackBarBlobs->Maximum = blobs_counter - 1;
+
+
+		System::String^ tmp = gcnew System::String(rec->edb_file_name.c_str());
+		edbForm->lblNameEDB->Text = tmp;
+		edbForm->NewListBoxEDB();
+		listBoxScript->Items->Clear();
+		for (int i = 0; i < str_counter; i++)
+		{
+			System::String^ tmp = gcnew System::String(ret[i].c_str());
+			listBoxScript->Items->Add(tmp);
+		}
+		Show();
+		timer1->Enabled = true;
+	}
+	private: System::Void button36_Click(System::Object^  sender, System::EventArgs^  e) 
+	{
+		int str_counter = 0;
+		current_blob = 0;
+
+		/*delete rec;
+		rec = new Recognition();*/
+		//std::string* ret = rec->SetImage5(res_mat, str_counter);
+		std::string* ret = rec->SetImage(res_mat, str_counter, true);
+		//rec->Get_Strings();
+		if (str_counter == 1)
+		{
+			System::String^ code = gcnew System::String(ret[0].c_str());
+			MessageBox::Show("Error. Code=" + code, "Warning");
+			blobs_counter = 0;
+			return;
+		}
+
+		//rec->SetBlobSourceImage(src_mat);
+		//rec->ReProcessing(src_mat);
+
+		int t = 0;
+		blobs = rec->GetBlobs(t);
+		blobs_counter = t;
+		trackBarBlobs->Value = 0;
+		trackBarBlobs->Maximum = blobs_counter - 1;
+
+
+		System::String^ tmp = gcnew System::String(rec->edb_file_name.c_str());
+		edbForm->lblNameEDB->Text = tmp;
+		edbForm->NewListBoxEDB();
+		listBoxScript->Items->Clear();
+		for (int i = 0; i < str_counter; i++)
+		{
+			System::String^ tmp = gcnew System::String(ret[i].c_str());
+			listBoxScript->Items->Add(tmp);
+		}
+		Show();
 	}
 };
 }

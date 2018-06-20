@@ -20,12 +20,12 @@
 /*	counter - number of *.edb files																																								*/
 /*																																																*/
 /*  int str_counter;																																											*/                        
-/*  std::string* ret= rec->SetImage(res_mat, str_counter);																																		*/
+/*  std::string* ret= rec->SetImage(res_mat, str_counter, bold);																																		*/
 /*																																																*/
 /* ret = array of result strings																																								*/
 /* res_mat - source image																																										*/
 /* str_counter - number of strings																																								*/
-/*																																																*/
+/* bold - Bold/Normal letters (rue/false)																																							*/
 /************************************************************************************************************************************************************************************************/
 
 
@@ -62,7 +62,7 @@ public:
 	
 
 	void SetEDB(std::string _edb_file_name);
-	std::string* Recognition::SetImage(Mat* _src, int& string_counter);
+	std::string* SetImage(Mat* _src, int& string_counter);
 	Blob_* GetBlobs(int& _blob_counter);
 	void ReadEDB(std::string _edb_file_name);
 	void WriteEDB(std::string _edb_file_name);
@@ -75,17 +75,22 @@ public:
 	std::string edb_file_name;
 	void NewImage();
 	void SetBlobSourceImage(Mat* src);
-	
+	std::string* SetImage2(Mat* _src, int& string_counter);
+	std::string* SetImage3(Mat* _src, int& string_counter);
+	std::string* SetImage4(Mat* _src, int& string_counter);
+	std::string* SetImage5(Mat* _src, int& string_counter);
+	std::string* SetImage(Mat* _src, int& string_counter, bool bold);
+	int blobs_counter;
 
 private:
 	
-	
+	bool bold;
 	std::string* edb_file_names;
 	int edb_file_names_counter;
 	Mat* src;
 	Mat* prcd;
 	Blob_* blobs;
-	int blobs_counter;
+	
 	int error;
 	bool Normalization();
 	int DifStrings(std::string str1, std::string str2);
@@ -94,7 +99,7 @@ private:
 	double RecogizeCompare(int _edb_counter, std::string* _edb);
 	int BestVarCompare(std::string str, int& dif, int edb_counter, std::string* edb);
 	std::string* ReadEDBCompare(std::string _edb_file_name, int& edb_counter);
-	int matrx[1000][1000];
+	int matrx[500][500];
 	std::string* Get_Strings(int& string_counter);
 	void SortRow(int number, int Length);
 	void InsertSpace(int number, int& Length);
@@ -110,5 +115,12 @@ private:
 	std::string GetCode3(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string GetCode4(Mat* src, int sx, int sy, double ht, double wt, double grav_x, double grav_y);
 	std::string* Get_Strings2(int& string_counter);
+	bool TicketYesNo2(Mat* src, Mat* big, int& counter);
+	Mat ReProcessing2(Mat* _src);
+	void Marking3(Mat* _src, Mat* bmp, int& counter, double ht, double wt);
+	Mat ReProcessing3(Mat* _src);
+	bool TicketYesNo3(Mat* src, Mat* big, int& counter);
+	bool PrePro2(Mat* src, Mat* big, int& counter);
+	Mat ReProcessing4(Mat* _src);
 };
 
